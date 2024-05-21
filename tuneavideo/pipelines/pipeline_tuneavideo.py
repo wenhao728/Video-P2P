@@ -242,6 +242,8 @@ class TuneAVideoPipeline(DiffusionPipeline):
         latents = rearrange(latents, "b c f h w -> (b f) c h w")
         bs = 4
         video_list = []
+        weight_dtype = latents.dtype
+        self.vae = self.vae.to(weight_dtype)
         for i in range(max(latents.shape[0]//bs, 1)):
             video = self.vae.decode(latents[i*bs:min((i+1)*bs, latents.shape[0])]).sample
             video = (video / 2 + 0.5).clamp(0, 1)
